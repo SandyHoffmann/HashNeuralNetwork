@@ -5,15 +5,15 @@ from keras.preprocessing import image
 from keras.applications.vgg16 import VGG16, preprocess_input
 from keras.models import Model
 import matplotlib.pyplot as plt
-
+import imagehash
 #usando imagens do dataset 101_ObjectCategories, butterfly, https://drive.google.com/file/d/137RyRjvTBkBiIfeYBNZBtViDHQ6_Ewsp/view?usp=drive_link
 
-image_folder = '101_ObjectCategories/butterfly'
-feature_folder = 'features'
+image_folder = 'tests/101_ObjectCategories/butterfly'
+feature_folder = 'tests/101_ObjectCategories/features'
 
 # Usando modelo pré treinado CNN (VGG16)
 base_model = VGG16(weights='imagenet')
-model = Model(inputs=base_model.input, outputs=base_model.get_layer('block5_conv3').output)  # usando layer 'block5_conv3' 
+model = Model(inputs=base_model.input, outputs=base_model.get_layer('fc1').output)  # usando layer 'fc1' 
 
 # Colocando no modelo para processar as imagens no padrao do VGG16
 def preprocess_image(img_path):
@@ -29,6 +29,7 @@ def extract_and_save_features(image_folder, feature_folder):
         os.makedirs(feature_folder)
 
     for img_name in os.listdir(image_folder):
+        print(img_name)
         img_path = os.path.join(image_folder, img_name)
         img_array = preprocess_image(img_path)
         features = model.predict(img_array)  
@@ -52,7 +53,7 @@ def get_images_similar_to(image_path, feature_folder):
         feature_compare = np.load(feature_path_compare)
         # Linalg = distancia euclidiana
         distances = np.linalg.norm(feature_compare - feature)
-        print("distances:", distances)
+        # print("distances:", distances)
         feature_distances.append(distances)
 
     print("feature_distances:", feature_distances)
@@ -78,7 +79,17 @@ def get_images_similar_to(image_path, feature_folder):
     plt.suptitle(f'Images similar to {os.path.basename(image_path)}', fontsize=20)
     plt.show()
 
+def features_to_hash(feature_folder):
+    hashes = []
+    for feature_file in os.listdir(feature_folder):
+        feature_path = os.path.join(feature_folder, feature_file)
+        feature = np.load(feature_path)
+        hash = imagehash.phash(feature)
+        print(hash)
+        hashes.append(hash)
+    return hashes
+
 # Só precisa chamar uma vez para extrair e salvar as features na pasta 'features'
 # extract_and_save_features(image_folder, feature_folder)
-
-get_images_similar_to('101_ObjectCategories/butterfly/image_0001.jpg', feature_folder)
+# features_to_hash(feature_folder)
+get_images_similar_to('tests/101_ObjectCategories/butterfly/image_0001.jpg', feature_folder) 
