@@ -8,8 +8,11 @@ import matplotlib.pyplot as plt
 import imagehash
 #usando imagens do dataset 101_ObjectCategories, butterfly, https://drive.google.com/file/d/137RyRjvTBkBiIfeYBNZBtViDHQ6_Ewsp/view?usp=drive_link
 
-image_folder = 'tests/101_ObjectCategories/butterfly'
-feature_folder = 'tests/101_ObjectCategories/features'
+# image_folder = 'tests/101_ObjectCategories/butterfly'
+# feature_folder = 'tests/101_ObjectCategories/features'
+
+image_folder = 'perceptualHashingTests/images'
+feature_folder = 'perceptualHashingTests/features'
 
 # Usando modelo pré treinado CNN (VGG16)
 base_model = VGG16(weights='imagenet')
@@ -59,7 +62,7 @@ def get_images_similar_to(image_path, feature_folder):
     print("feature_distances:", feature_distances)
     print("len(feature_distances):", len(feature_distances))
     # para organizar entre as 5 imagens mais similares, ou seja, com menor distância (argsort da os indices)
-    similar_indices = np.argsort(feature_distances)[0:5]
+    similar_indices = np.argsort(feature_distances)[0:9]
     print("similar_indices:", similar_indices)
 
     image_dir = os.path.dirname(image_path)
@@ -71,9 +74,11 @@ def get_images_similar_to(image_path, feature_folder):
     plt.axis('off')
 
     for i in similar_indices:
-        plt.subplot(5, 5, count + 1)
+        plt.subplot(9, 9, count + 1)
         count += 1
         img = image.load_img(os.path.join(image_dir, os.listdir(image_dir)[i]), target_size=(224, 224))
+        print(os.listdir(image_dir)[i])
+        print(feature_distances[i])
         plt.imshow(img)
         plt.axis('off')
     plt.suptitle(f'Images similar to {os.path.basename(image_path)}', fontsize=20)
@@ -90,6 +95,6 @@ def features_to_hash(feature_folder):
     return hashes
 
 # Só precisa chamar uma vez para extrair e salvar as features na pasta 'features'
-# extract_and_save_features(image_folder, feature_folder)
+extract_and_save_features(image_folder, feature_folder)
 # features_to_hash(feature_folder)
-get_images_similar_to('tests/101_ObjectCategories/butterfly/image_0001.jpg', feature_folder) 
+get_images_similar_to('perceptualHashingTests/images/0_image_test.jpg', feature_folder) 
