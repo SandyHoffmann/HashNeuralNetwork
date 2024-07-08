@@ -55,7 +55,11 @@ def get_images_similar_to(image_path, feature_folder):
         feature_path_compare = os.path.join(feature_folder, feature_file_compare)
         feature_compare = np.load(feature_path_compare)
         # Linalg = distancia euclidiana
-        distances = np.linalg.norm(feature_compare - feature)
+        # distances = np.linalg.norm(feature_compare - feature)
+        # distancia cosine
+        distances = np.dot(np.transpose(feature), feature_compare) / (np.linalg.norm(feature) * np.linalg.norm(feature_compare))
+        distances = 1 - distances
+        print("distances len:", feature_compare.shape, feature.shape, distances)
         # print("distances:", distances)
         feature_distances.append(distances)
 
@@ -63,7 +67,7 @@ def get_images_similar_to(image_path, feature_folder):
     print("len(feature_distances):", len(feature_distances))
     # para organizar entre as 5 imagens mais similares, ou seja, com menor distância (argsort da os indices)
     similar_indices = np.argsort(feature_distances)[0:9]
-    print("similar_indices:", similar_indices)
+    # print("similar_indices:", similar_indices)
 
     image_dir = os.path.dirname(image_path)
     print(image_dir)
@@ -77,8 +81,8 @@ def get_images_similar_to(image_path, feature_folder):
         plt.subplot(9, 9, count + 1)
         count += 1
         img = image.load_img(os.path.join(image_dir, os.listdir(image_dir)[i]), target_size=(224, 224))
-        print(os.listdir(image_dir)[i])
-        print(feature_distances[i])
+        # print(os.listdir(image_dir)[i])
+        # print(feature_distances[i])
         plt.imshow(img)
         plt.axis('off')
     plt.suptitle(f'Images similar to {os.path.basename(image_path)}', fontsize=20)

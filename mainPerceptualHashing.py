@@ -102,7 +102,11 @@ def DCT_Perceptual_Hashing(image_folder, resize_size=32, dct_block_size=(8,8)):
 
     return hash_list
 
+"""
+Hamming Distance
 
+Valores entre 0 e 1, mais proximo de 0 significa que as imagens sao mais similares
+"""
 def hamming_distance(hash_referencia, hash_list):
     hamming_list = []
     index_img = 0
@@ -111,7 +115,9 @@ def hamming_distance(hash_referencia, hash_list):
         # print(hash_referencia)
         # hamming = sum(c1 != c2 for c1, c2 in zip(hash_referencia, hash))
         hamming = bin(hash ^ hash_referencia).count('1')
-        hamming_list.append([hamming, index_img])
+        print(hamming)
+        print(len(bin(hash)) - 2)
+        hamming_list.append([hamming/(len(bin(hash)) - 2), index_img])
         index_img += 1
     return hamming_list
 
@@ -194,7 +200,7 @@ def experimento_efetividade_operacoes_imagens():
     plt.axis('off')
     count = 0
     print(os.listdir(image_folder_perceptual))
-
+    fixed_radius_nearest_neighbors(hash_list[2], hash_list, 1)
     for i in range(len(hamming_dist_list)):
         plt.subplot(9, 9, count + 1)
         count += 1
@@ -205,6 +211,12 @@ def experimento_efetividade_operacoes_imagens():
 
     plt.show()
 
+def fixed_radius_nearest_neighbors(y, z, radius):
+    print(y)
+    print(z)
+    # for i in range(len(y)):
+        
+    return True
 
 experimento_efetividade_operacoes_imagens()
 
